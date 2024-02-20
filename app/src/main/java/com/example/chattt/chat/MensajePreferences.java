@@ -1,9 +1,9 @@
-package com.example.chattt;
+package com.example.chattt.chat;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class MessagePreferences {
+public class MensajePreferences {
     private static final String PREF_NAME = "ChatMessages";
     private static final String KEY_MESSAGES_PREFIX = "messages_";
 

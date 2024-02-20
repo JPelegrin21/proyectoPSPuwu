@@ -1,4 +1,4 @@
-package com.example.chattt;
+package com.example.chattt.adaptadores;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,14 +9,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chattt.chat.DatosMensaje;
+import com.example.chattt.R;
+
 import java.util.List;
 
 public class AdaptadorChat extends RecyclerView.Adapter<AdaptadorChat.ChatViewHolder> {
 
     private Context context;
-    private List<ChatMessage> chatMessages;
+    private List<DatosMensaje> chatMessages;
 
-    public AdaptadorChat(Context context, List<ChatMessage> chatMessages) {
+    public AdaptadorChat(Context context, List<DatosMensaje> chatMessages) {
         this.context = context;
         this.chatMessages = chatMessages;
     }
@@ -31,7 +34,7 @@ public class AdaptadorChat extends RecyclerView.Adapter<AdaptadorChat.ChatViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        ChatMessage chatMessage = chatMessages.get(position);
+        DatosMensaje chatMessage = chatMessages.get(position);
         holder.chatTextView.setText(chatMessage.getText());
         if (chatMessage.isUser()) {
             // Si el mensaje es del usuario, alinea el texto a la derecha y cambia el color de fondo

@@ -1,4 +1,4 @@
-package com.example.chattt;
+package com.example.chattt.contactos;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import com.example.chattt.R;
+import com.example.chattt.adaptadores.AdaptadorContactos;
+import com.example.chattt.chat.ChatActivity;
 
 import java.util.ArrayList;
 

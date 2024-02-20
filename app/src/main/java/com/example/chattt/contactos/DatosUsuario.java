@@ -1,4 +1,4 @@
-package com.example.chattt;
+package com.example.chattt.contactos;
 
 public class DatosUsuario {
 

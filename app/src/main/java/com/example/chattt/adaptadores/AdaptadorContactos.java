@@ -1,4 +1,4 @@
-package com.example.chattt;
+package com.example.chattt.adaptadores;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.chattt.chat.ChatActivity;
+import com.example.chattt.contactos.DatosUsuario;
+import com.example.chattt.R;
 
 import java.util.ArrayList;
 

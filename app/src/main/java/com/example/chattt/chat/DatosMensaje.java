@@ -1,11 +1,11 @@
-package com.example.chattt;
+package com.example.chattt.chat;
 
-public class ChatMessage {
+public class DatosMensaje {
 
     private String text;
     private boolean isUser; // true si el mensaje es del usuario, false si es del asistente
 
-    public ChatMessage(String text, boolean isUser) {
+    public DatosMensaje(String text, boolean isUser) {
         this.text = text;
         this.isUser = isUser;
     }

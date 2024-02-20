@@ -1,4 +1,4 @@
-package com.example.chattt;
+package com.example.chattt.chat;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chattt.R;
+import com.example.chattt.adaptadores.AdaptadorChat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private RecyclerView chatRecyclerView;
     private AdaptadorChat chatAdapter;
-    private List<ChatMessage> chatMessages;
+    private List<DatosMensaje> chatMessages;
     private EditText chatInputEditText;
     private Button chatSendButton;
     private String userName;
@@ -38,11 +41,11 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Cargar mensajes previos
-        String previousMessages = MessagePreferences.loadMessages(this, userName);
+        String previousMessages = MensajePreferences.loadMessages(this, userName);
         if (!previousMessages.isEmpty()) {
             String[] messagesArray = previousMessages.split(",");
             for (String message : messagesArray) {
-                chatMessages.add(new ChatMessage(message, true));
+                chatMessages.add(new DatosMensaje(message, true));
             }
             chatAdapter.notifyDataSetChanged();
             chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
@@ -53,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = chatInputEditText.getText().toString();
                 if (!message.isEmpty()) {
-                    chatMessages.add(new ChatMessage(message, true));
+                    chatMessages.add(new DatosMensaje(message, true));
                     chatAdapter.notifyDataSetChanged();
                     chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
                     chatInputEditText.setText("");
@@ -67,11 +70,11 @@ public class ChatActivity extends AppCompatActivity {
 
     private void saveMessages() {
         StringBuilder messagesStringBuilder = new StringBuilder();
-        for (ChatMessage chatMessage : chatMessages) {
+        for (DatosMensaje chatMessage : chatMessages) {
             messagesStringBuilder.append(chatMessage.getText()).append(",");
         }
 
-        MessagePreferences.saveMessages(this, userName, messagesStringBuilder.toString());
+        MensajePreferences.saveMessages(this, userName, messagesStringBuilder.toString());
     }
 }
 
