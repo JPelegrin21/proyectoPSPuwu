@@ -1,8 +1,13 @@
 package com.example.chattt.contactos;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,18 +22,29 @@ import com.example.chattt.R;
 import com.example.chattt.adaptadores.AdaptadorContactos;
 import com.example.chattt.chat.ChatActivity;
 
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView chatsPersonas;
-    ArrayList<DatosUsuario> lista = new ArrayList<>();
+    ArrayList<DatosUsuario> lista = new ArrayList<DatosUsuario>(); //Lista contactos
     AdaptadorContactos ac;
+    ActivityResultLauncher<Intent> lanzador;
+    final static String FICHERO = "ficheroDatos";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        File f = getBaseContext().getFileStreamPath(FICHERO);
+        if (f.exists()) {
+            leerFichero();
+        }
 
         chatsPersonas = findViewById(R.id.recicladora);
         chatsPersonas.setLayoutManager(new LinearLayoutManager(this));
@@ -37,16 +53,42 @@ public class MainActivity extends AppCompatActivity {
         lista.add(new DatosUsuario("UwU", "ffs fuck off"));
         lista.add(new DatosUsuario("XD", "kys bro"));
 
-        ac = new AdaptadorContactos(this, lista);
+
+        lanzador = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult resultado) {
+                        DatosUsuario du;
+                        du = lista.get(resultado.getData().getIntExtra("POS", 0));
+                        String ultimoMensaje = resultado.getData().getStringExtra("MENSAJE");
+                        du.setUltimoMensaje(ultimoMensaje);
+                        ac.notifyDataSetChanged();
+                        grabarFichero();
+                    }
+                }
+        );
+
+        ac = new AdaptadorContactos(this, lista, lanzador);
+        chatsPersonas.setAdapter(ac);
+        /*
         ac.inicializarListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Manejar el clic en un elemento de la lista (si es necesario)
+                // Al hacer clic en un elemento de la lista, abrir el chat
+                posicionEdicion = chatsPersonas.getChildAdapterPosition(v);
+                DatosUsuario usuario = lista.get(posicionEdicion);
+                abrirChat(usuario);
+            }
+            private void abrirChat(DatosUsuario usuario) {
+                // Abrir el chat al hacer clic en un elemento de la lista
+                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                intent.putExtra("nombreUsuario", usuario.getNombre());
+                lanzador.launch(intent);
             }
         });
-
-        chatsPersonas.setAdapter(ac);
+        */
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,14 +109,36 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void abrirChat(View view) {
-        DatosUsuario usuario = lista.get(chatsPersonas.getChildAdapterPosition(view));
-        abrirChat(usuario);
-    }
 
-    private void abrirChat(DatosUsuario usuario) {
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("nombreUsuario", usuario.getNombre());
-        startActivity(intent);
+    public void leerFichero() {
+        ObjectInputStream f = null;
+
+        try {
+            f = new ObjectInputStream(openFileInput(FICHERO));
+            lista = (ArrayList<DatosUsuario>) f.readObject();
+        } catch (Exception e) {
+            // Manejar la excepción apropiadamente
+        } finally {
+            try {
+                if (f != null) {
+                    f.close();
+                }
+            } catch (Exception e) {
+                // Manejar la excepción apropiadamente
+            }
+        }
+    }
+    public void grabarFichero() {
+        ObjectOutputStream f = null;
+        try {
+            f = new ObjectOutputStream(openFileOutput(FICHERO, MODE_PRIVATE));
+            f.writeObject(lista);
+        } catch (Exception e) {
+            //NO HACEMOS NADA
+        } finally {
+            try {
+                f.close();
+            } catch (Exception e){}
+        }
     }
 }

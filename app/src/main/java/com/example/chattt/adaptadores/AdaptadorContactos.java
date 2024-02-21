@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,15 +23,12 @@ public class AdaptadorContactos extends RecyclerView.Adapter<AdaptadorContactos.
 
     Context contexto;
     ArrayList<DatosUsuario> datos;
-    View.OnClickListener escuchador;
+    ActivityResultLauncher<Intent> lanzador;
 
-    public AdaptadorContactos(Context contexto, ArrayList<DatosUsuario> datos) {
+    public AdaptadorContactos(Context contexto, ArrayList<DatosUsuario> datos, ActivityResultLauncher<Intent> lanzador) {
         this.contexto = contexto;
         this.datos = datos;
-    }
-
-    public void inicializarListener(View.OnClickListener escucha){
-        this.escuchador = escucha;
+        this.lanzador = lanzador;
     }
 
     @NonNull
@@ -54,7 +52,7 @@ public class AdaptadorContactos extends RecyclerView.Adapter<AdaptadorContactos.
     }
 
     public class ContenedorChat extends RecyclerView.ViewHolder
-            implements View.OnCreateContextMenuListener, View.OnClickListener {
+            implements View.OnCreateContextMenuListener , View.OnClickListener {
 
         TextView tvNombre, tvUltimoMensaje;
         ImageView imagen;
@@ -65,16 +63,10 @@ public class AdaptadorContactos extends RecyclerView.Adapter<AdaptadorContactos.
             tvUltimoMensaje = itemView.findViewById(R.id.textoMensaje);
             imagen = itemView.findViewById(R.id.imagen);
 
-            // Configurar OnClickListener para el elemento de la lista
             itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            // Al hacer clic en un elemento de la lista, abrir el chat
-            DatosUsuario usuario = datos.get(getAdapterPosition());
-            abrirChat(usuario);
-        }
+
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -84,12 +76,21 @@ public class AdaptadorContactos extends RecyclerView.Adapter<AdaptadorContactos.
             menu.add(getAdapterPosition(), ANCLAR, 1, "Anclar");
         }
 
-        private void abrirChat(DatosUsuario usuario) {
-            // Abrir el chat al hacer clic en un elemento de la lista
+        @Override
+        public void onClick(View v) {
+            int posicion = getAdapterPosition();
+            DatosUsuario usuario = datos.get(posicion);
+            abrirChat(usuario, posicion);
+        }
+        private void abrirChat(DatosUsuario usuario, int posicion) {
+
             Intent intent = new Intent(contexto, ChatActivity.class);
             intent.putExtra("nombreUsuario", usuario.getNombre());
-            contexto.startActivity(intent);
+            intent.putExtra("posicion_contenedor", posicion);
+            lanzador.launch(intent);
         }
+
+
     }
 
 }

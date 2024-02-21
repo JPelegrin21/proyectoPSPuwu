@@ -1,10 +1,16 @@
 package com.example.chattt.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.window.OnBackInvokedDispatcher;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +29,8 @@ public class ChatActivity extends AppCompatActivity {
     private EditText chatInputEditText;
     private Button chatSendButton;
     private String userName;
+    private int pos;
+    DatosMensaje ultimoMensaje;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_chtatecito);
 
         userName = getIntent().getStringExtra("nombreUsuario");
+        pos = getIntent().getIntExtra("posicion_contenedor", 0);
 
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
         chatInputEditText = findViewById(R.id.chat_input_edit_text);
@@ -40,12 +49,15 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView.setAdapter(chatAdapter);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
+
         // Cargar mensajes previos
         String previousMessages = MensajePreferences.loadMessages(this, userName);
         if (!previousMessages.isEmpty()) {
             String[] messagesArray = previousMessages.split(",");
             for (String message : messagesArray) {
-                chatMessages.add(new DatosMensaje(message, true));
+                ultimoMensaje = new DatosMensaje(message, true);
+                chatMessages.add(ultimoMensaje);
             }
             chatAdapter.notifyDataSetChanged();
             chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
@@ -56,7 +68,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = chatInputEditText.getText().toString();
                 if (!message.isEmpty()) {
-                    chatMessages.add(new DatosMensaje(message, true));
+                    ultimoMensaje = new DatosMensaje(message, true);
+                    chatMessages.add(ultimoMensaje);
                     chatAdapter.notifyDataSetChanged();
                     chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
                     chatInputEditText.setText("");
@@ -66,7 +79,23 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent i = new Intent();
+                i.putExtra("MENSAJE", ultimoMensaje.getText().toString());
+                i.putExtra("POS", pos);
+                setResult(RESULT_OK, i);
+                finish();
+            }
+        };
+
+        // Agregar el Callback al Dispatcher
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+
+
 
     private void saveMessages() {
         StringBuilder messagesStringBuilder = new StringBuilder();
@@ -76,6 +105,8 @@ public class ChatActivity extends AppCompatActivity {
 
         MensajePreferences.saveMessages(this, userName, messagesStringBuilder.toString());
     }
+
+
 }
 
 /*
