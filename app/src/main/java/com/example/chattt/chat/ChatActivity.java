@@ -38,6 +38,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_chtatecito);
 
         userName = getIntent().getStringExtra("nombreUsuario");
+        getSupportActionBar().setTitle(userName);
         pos = getIntent().getIntExtra("posicion_contenedor", 0);
 
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
