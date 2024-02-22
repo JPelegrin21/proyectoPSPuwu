@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,14 +45,18 @@ public class MainActivity extends AppCompatActivity {
         File f = getBaseContext().getFileStreamPath(FICHERO);
         if (f.exists()) {
             leerFichero();
+            Log.d( "XD", "Ha entrado en el f.exists");
+        }else {
+            Log.d("XD", "Va mal");
+            lista.add(new DatosUsuario("Pepito", "kys bro"));
+            lista.add(new DatosUsuario("UwU", "ffs fuck off"));
+            lista.add(new DatosUsuario("XD", "kys bro"));
         }
 
         chatsPersonas = findViewById(R.id.recicladora);
         chatsPersonas.setLayoutManager(new LinearLayoutManager(this));
 
-        lista.add(new DatosUsuario("Pepito", "kys bro"));
-        lista.add(new DatosUsuario("UwU", "ffs fuck off"));
-        lista.add(new DatosUsuario("XD", "kys bro"));
+
 
 
         lanzador = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -116,15 +121,15 @@ public class MainActivity extends AppCompatActivity {
         try {
             f = new ObjectInputStream(openFileInput(FICHERO));
             lista = (ArrayList<DatosUsuario>) f.readObject();
+            Log.d( "XD", "Lee bien");
         } catch (Exception e) {
-            // Manejar la excepción apropiadamente
+            Log.d( "XD", "Algo ha ido mal leyendo: " + e.getMessage());
         } finally {
             try {
                 if (f != null) {
                     f.close();
                 }
             } catch (Exception e) {
-                // Manejar la excepción apropiadamente
             }
         }
     }
@@ -133,12 +138,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             f = new ObjectOutputStream(openFileOutput(FICHERO, MODE_PRIVATE));
             f.writeObject(lista);
+            Log.d( "XD", "Graba bien");
         } catch (Exception e) {
-            //NO HACEMOS NADA
+            Log.d( "XD", "Algo ha ido mal grabando: " + e.getMessage());
         } finally {
             try {
                 f.close();
-            } catch (Exception e){}
+            } catch (Exception e){
+            }
         }
     }
 }

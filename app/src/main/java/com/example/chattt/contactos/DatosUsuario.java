@@ -1,6 +1,8 @@
 package com.example.chattt.contactos;
 
-public class DatosUsuario {
+import java.io.Serializable;
+
+public class DatosUsuario implements Serializable {
 
     String nombre;
     String ultimoMensaje;
